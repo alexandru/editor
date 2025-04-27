@@ -7,7 +7,7 @@ use clap::{Parser, Subcommand, Args};
 #[derive(Parser, Debug)]
 #[clap(args_conflicts_with_subcommands = true)]
 #[command(name = "editor")]
-#[command(about = "A command-line tool for editing files and setting default editors.", long_about = None)]
+#[command(about = "CLI utility for invoking your favorite editor.", long_about = None)]
 struct Cli {
     #[clap(flatten)]
     open: OpenArgs,
