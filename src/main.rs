@@ -1,8 +1,8 @@
+use clap::{Args, Parser, Subcommand};
 use std::error::Error;
-use std::process::Command;
-use std::os::unix::process::CommandExt;
-use std::io;
-use clap::{Parser, Subcommand, Args};
+use crate::editor::osutils::handle_open_command;
+
+pub mod editor;
 
 #[derive(Parser, Debug)]
 #[clap(args_conflicts_with_subcommands = true)]
@@ -44,29 +44,6 @@ enum Editor {
     Idea,
 }
 
-fn exec(program: &str, args: Vec<&str>) -> Result<(), io::Error> {
-    let r = Command::new(program)
-        .args(args)
-        .exec();
-    Err(r)
-}
-
-fn handle_open_command(paths: Vec<String>, wait: bool) -> Result<(), Box<dyn Error>> {
-    if paths.is_empty() {
-        println!("No paths provided. Opening default editor.");
-        exec("vim", vec![])?;
-    } else {
-        for path in paths {
-            println!("Opening file: {}", path);
-            exec("vim", vec![&path])?;
-        }
-    }
-    if wait {
-        println!("Waiting for editor to close...");
-    }
-    Ok(())
-}
-
 fn main() -> Result<(), Box<dyn Error>> {
     let cli = Cli::parse();
 
@@ -78,7 +55,10 @@ fn main() -> Result<(), Box<dyn Error>> {
             handle_open_command(cli.open.paths, cli.open.wait)?;
         }
         Some(Commands::SetDefault { editor, global }) => {
-            println!("Setting default editor to {:?} (global: {})", editor, global);
+            println!(
+                "Setting default editor to {:?} (global: {})",
+                editor, global
+            );
         }
     }
 
